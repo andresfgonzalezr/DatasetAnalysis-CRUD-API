@@ -2,9 +2,7 @@ from sqlalchemy.sql.expression import text
 from database.models import Datos
 from database.database import Session, session
 import json
-from database import client
-from typing import Annotated
-from fastapi import Depends
+from database.database import client
 
 
 class CRUD:

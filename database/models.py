@@ -1,6 +1,6 @@
 from sqlalchemy import DateTime
 from sqlalchemy import Column, Float, String, Integer
-from database import Base
+from database.database import Base
 from pydantic import BaseModel
 import datetime
 from typing import Optional
