@@ -1,17 +1,12 @@
 from sqlalchemy import DateTime
 from sqlalchemy import Column, Float, String, Integer
-from sqlalchemy.orm import sessionmaker, declarative_base
-from database import engine
+from database import Base
 from pydantic import BaseModel
 import datetime
 from typing import Optional
 
 
-Base = declarative_base()
 
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 class Datos(Base):

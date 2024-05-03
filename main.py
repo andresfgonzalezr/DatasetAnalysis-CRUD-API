@@ -1,7 +1,17 @@
 from fastapi import FastAPI, Depends
-from cleaning_data import clean_data
-from crud import CRUD, get_gpt
-from models import DataItems
+from database.crud import CRUD, get_gpt
+from database.models import DataItems
+from sqlalchemy.orm import Session
+
+
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# db_dependency = Annotated[Session, Depends(get_db)]
 
 
 app = FastAPI()
@@ -15,9 +25,11 @@ def create_items_route(item_data: DataItems):
     return "created row"
 
 
-@app.get("/items/read/{id}")
-def read_item_by_id(id: int):
-    return {CRUD.read_by_id(id)}
+@app.get("/items/read/{id_df}")
+def read_item_by_id(id_df: int, db: Session = Depends(get_db)):
+    data = CRUD.read_by_id(id_df, db)
+    print(data)
+    return {"respose": data}
 
 
 @app.get("/items/read")
@@ -43,5 +55,5 @@ def use_gpt(prompt):
     return get_gpt(prompt)
 
 
-if __name__ == "__main__":
-    clean_data()
+# if __name__ == "__main__":
+    # clean_data()

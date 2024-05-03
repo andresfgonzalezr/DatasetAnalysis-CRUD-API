@@ -1,20 +1,10 @@
 from sqlalchemy.sql.expression import text
-from models import Datos, Session, session
+from database.models import Datos, Session, session
 import json
 from database import client
 from typing import Annotated
 from fastapi import Depends
 
-
-def get_db():
-    db = Session()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 class CRUD:
     # The function has the parameter data, the new data comes from the class Datos, creating the new object, and then add to the db and to confirm it make a commit
@@ -32,9 +22,9 @@ class CRUD:
         # return session.query(text("final_data_andres")).all()
 
     @staticmethod
-    def read_by_id(data_id):
+    def read_by_id(data_id, db):
         query = text("SELECT * FROM final_data_andres WHERE id= :data_id")
-        result = session.execute(query, {"data_id": data_id}).fetchall()
+        result = db.execute(query, {"data_id": data_id}).fetchall()
         return result
 
     @staticmethod
@@ -54,6 +44,7 @@ class CRUD:
 
 
 def get_gpt(input_prompt):
+    db = Session()
     user_prompt = (f'''
                    I have the next promtp, I need to take out the information about, also I have to fill the next format and give plis to me in a json format
                        id = Column(Integer, primary_key=True)
@@ -97,15 +88,8 @@ def get_gpt(input_prompt):
     if data_response["action"] == "create":
         CRUD.create(data_dictionary)
     elif data_response["action"] == "read":
-        CRUD.read_by_id( )
+        return CRUD.read_by_id(data_id_gpt, db)
     elif data_response["action"] == "update":
         CRUD.update_data(data_id_gpt, data_dictionary)
     elif data_response["action"] == "delete":
         CRUD.delete_data(data_id_gpt)
-
-    print(mesage_response)
-    print(data_dictionary)
-    print(data_id_gpt)
-
-
-print(get_gpt("read row  with the id 1"))
