@@ -6,9 +6,6 @@ import datetime
 from typing import Optional
 
 
-
-
-
 class Datos(Base):
     __tablename__ = "final_data_andres"
     id = Column(Integer, primary_key=True)

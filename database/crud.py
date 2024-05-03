@@ -1,5 +1,6 @@
 from sqlalchemy.sql.expression import text
-from database.models import Datos, Session, session
+from database.models import Datos
+from database.database import Session, session
 import json
 from database import client
 from typing import Annotated
@@ -9,17 +10,16 @@ from fastapi import Depends
 class CRUD:
     # The function has the parameter data, the new data comes from the class Datos, creating the new object, and then add to the db and to confirm it make a commit
     @staticmethod
-    def create(data):
+    def create(data, db):
         new_data = Datos(**data)
-        session.add(new_data)
-        session.commit()
+        db.add(new_data)
+        db.commit()
 
     @staticmethod
     # Making a request to show all the table
-    def read():
+    def read(db):
         query = text("SELECT * FROM final_data_andres")
-        return session.execute(query).fetchall()
-        # return session.query(text("final_data_andres")).all()
+        return db.execute(query).fetchall()
 
     @staticmethod
     def read_by_id(data_id, db):
@@ -29,18 +29,18 @@ class CRUD:
 
     @staticmethod
     # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
-    def update_data(data_id, new_data):
-        data_to_update = session.query(Datos).filter_by(id=data_id).first()
+    def update_data(data_id, new_data, db):
+        data_to_update = db.query(Datos).filter_by(id=data_id).first()
         for key, value in new_data.items():
             setattr(data_to_update, key, value)
-        session.commit()
+        db.commit()
 
     @staticmethod
     # Deleting one row from the DataBase with the id
-    def delete_data(data_id):
+    def delete_data(data_id, db):
         data_to_delete = session.query(Datos).filter_by(id=data_id).first()
-        session.delete(data_to_delete)
-        session.commit()
+        db.delete(data_to_delete)
+        db.commit()
 
 
 def get_gpt(input_prompt):
@@ -86,10 +86,12 @@ def get_gpt(input_prompt):
     data_id_gpt = data_dictionary["id"]
 
     if data_response["action"] == "create":
-        CRUD.create(data_dictionary)
+        return CRUD.create(data_dictionary, db)
     elif data_response["action"] == "read":
         return CRUD.read_by_id(data_id_gpt, db)
     elif data_response["action"] == "update":
-        CRUD.update_data(data_id_gpt, data_dictionary)
+        return CRUD.update_data(data_id_gpt, data_dictionary, db)
     elif data_response["action"] == "delete":
-        CRUD.delete_data(data_id_gpt)
+        return CRUD.delete_data(data_id_gpt, db)
+
+print(get_gpt("read dataframe with id 1"))

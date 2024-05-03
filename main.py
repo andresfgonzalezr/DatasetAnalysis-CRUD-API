@@ -11,14 +11,11 @@ def get_db():
     finally:
         db.close()
 
-# db_dependency = Annotated[Session, Depends(get_db)]
-
 
 app = FastAPI()
 
 
 # Set up a route POST that allows to create new elements in the DataBase and give back the data of the created elements with the estructure of the DataItems
-
 @app.post("/items/create", response_model=DataItems)
 def create_items_route(item_data: DataItems):
     CRUD.create(item_data)
