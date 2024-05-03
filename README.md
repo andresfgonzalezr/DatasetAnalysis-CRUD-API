@@ -13,9 +13,12 @@ This project involves extracting data from a PostgreSQL instance using Python, p
 
 ## Project Structure
 
-main.py: Contains the main code for the project.
-requirements.txt: Includes all dependencies needed for the project.
-README.md: This document, providing an overview of the project and its tasks.
+- README.md: This document, providing an overview of the project and its tasks.
+- requirements.txt: Includes all dependencies needed for the project.
+- main.py: Contains the main code for the project.
+- Clas_file.py: Contains the Classes used in the project, to import them into the files that need them
+- database.py: This file is in charge of downloading the DataBase from the postgreSQL instance and using pandas to transform into a DataSet, to work on it.
+- cleaning_data.py: The code in this file is the one that is in charge of cleaning the data after downloading the DataBase from the postgreSQL instance.
 
 ## Usage Instructions
 
