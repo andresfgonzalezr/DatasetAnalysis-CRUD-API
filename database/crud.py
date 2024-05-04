@@ -81,12 +81,15 @@ def get_gpt(input_prompt):
     data_id_gpt = data_dictionary["id"]
 
     if data_response["action"] == "create":
-        return create(data_dictionary, db)
+        create(data_dictionary, db)
+        return read_by_id(data_id_gpt, db)
     elif data_response["action"] == "read":
         return read_by_id(data_id_gpt, db)
     elif data_response["action"] == "update":
-        return update_data(data_id_gpt, data_dictionary, db)
+        update_data(data_id_gpt, data_dictionary, db)
+        return read_by_id(data_id_gpt, db)
     elif data_response["action"] == "delete":
-        return delete_data(data_id_gpt, db)
+        delete_data(data_id_gpt, db)
+        return read_by_id(data_id_gpt, db)
 
 # print(get_gpt("read dataframe with id 1"))
