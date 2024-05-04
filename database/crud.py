@@ -1,38 +1,40 @@
 from sqlalchemy.sql.expression import text
 from database.models import Datos
-from database.database import Session, session, engine
+from database.database import SessionLocal, session, engine
 import json
 from database.database import client
+from sqlalchemy.orm import Session
 
 
 def create(data, db):
-    new_data = Datos(**data)
+    data_dict = data.__dict__
+    new_data = Datos(**data_dict)
     db.add(new_data)
     db.commit()
 
 
 # Making a request to show all the table
-def read(db):
+def read(db: Session):
     query = text("SELECT * FROM final_data_andres")
     return db.execute(query).fetchall()
 
 
-def read_by_id(data_id, db: session):
+def read_by_id(data_id, db: Session):
     query = text("SELECT * FROM final_data_andres WHERE id= :data_id")
     result = db.execute(query, {"data_id": data_id}).fetchall()
     return result
 
 
 # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
-def update_data(data_id, new_data, db):
-    data_to_update = db.query(Datos).filter_by(id=data_id).first()
+def update_data(data_id, new_data, db: Session):
+    data_to_update = session.query(Datos).filter_by(id=data_id).first()
     for key, value in new_data.items():
         setattr(data_to_update, key, value)
     db.commit()
 
 
 # Deleting one row from the DataBase with the id
-def delete_data(data_id, db):
+def delete_data(data_id, db: Session):
     data_to_delete = session.query(Datos).filter_by(id=data_id).first()
     db.delete(data_to_delete)
     db.commit()
