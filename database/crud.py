@@ -45,8 +45,7 @@ def delete_data(data_id, db: Session):
         return "id doesn´t exist"
 
 
-def get_gpt(input_prompt):
-    db = Session()
+def get_gpt(input_prompt, db):
     user_prompt = (f'''
                    I have the next promtp, I need to take out the information about, also I have to fill the next format and give plis to me in a json format
                        id = Column(Integer, primary_key=True)

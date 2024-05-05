@@ -23,6 +23,13 @@ This project involves extracting data from a PostgreSQL instance using Python, p
 ## Usage Instructions
 
 1. Setup Environment: Ensure Python and required dependencies from requirements.txt are installed.
-2. Run main.py: Execute main.py to initiate the project.
-3. Follow Task Instructions: The code follow the task instruction in order to operate and solve the task.
-4. API Endpoint Access: Upon completion, access the CRUD functionality through the FastAPI endpoints.
+2. Run main.py: Execute main.py to initiate the project, use "uvicorn main:app --relod" to initiate the project.
+3. Enter to the localHost to began working with the database and the functions of the crud, use the URL:"http://127.0.0.1:8000/docs" or use the endpoints.
+4. The FastAPI interface will request information about the database in order to carry out any of the requests.
+5. For posting the API will ask the information about the row to create.
+6. For get one specific row the API will ask for the id of the row.
+7. For get all the database only execute
+8. For PUT introduce the information of the row you want to update.
+9. For delete the API will ask for the id in order to delete the row with that id.
+10. For using the GPT function, introduce the prompt you want to use, for a better understanding of the prompt is better to use the words "create", "read", "upgrade" or "delete"
+11. At the end only finish the process of the API using "ctrl + c"

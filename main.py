@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from database.crud import create, read, read_by_id, update_data, delete_data, get_gpt
 from database.models import DataItems
 from sqlalchemy.orm import Session
@@ -50,8 +50,12 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/items/gpt")
-def use_gpt(prompt):
-    return get_gpt(prompt)
+def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
+    try:
+        result = get_gpt(input_prompt)
+        return {"response": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # if __name__ == "__main__":
