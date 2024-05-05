@@ -28,7 +28,7 @@ def read_by_id(data_id, db: Session):
 
 # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
 def update_data(data_id, new_data, db: Session):
-    data_to_update = session.query(Datos).filter_by(id=data_id).first()
+    data_to_update = db.query(Datos).filter_by(id=data_id).first()
     for key, value in new_data.items():
         setattr(data_to_update, key, value)
     db.commit()
@@ -36,9 +36,10 @@ def update_data(data_id, new_data, db: Session):
 
 # Deleting one row from the DataBase with the id
 def delete_data(data_id, db: Session):
-    data_to_delete = session.query(Datos).filter_by(id=data_id).first()
+    data_to_delete = db.query(Datos).filter_by(id=data_id).first()
     db.delete(data_to_delete)
     db.commit()
+    return data_to_delete
 
 
 def get_gpt(input_prompt):
