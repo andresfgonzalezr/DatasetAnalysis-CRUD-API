@@ -2,7 +2,6 @@ from sqlalchemy import DateTime
 from sqlalchemy import Column, Float, String, Integer
 from database.database import Base
 from pydantic import BaseModel
-import datetime
 from typing import Optional
 
 
@@ -32,7 +31,7 @@ class Datos(Base):
 # defining a class using pydantic each attribute represent a data field and has the type.
 class DataItems(BaseModel):
     id: Optional[int]
-    timestamp: datetime.time
+    timestamp: Optional[str]
     age: Optional[str]
     industry: Optional[str]
     job_title: Optional[str]

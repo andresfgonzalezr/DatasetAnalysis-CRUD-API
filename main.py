@@ -19,8 +19,9 @@ app = FastAPI()
 # Set up a route POST that allows to create new elements in the DataBase and give back the data of the created elements with the estructure of the DataItems
 @app.post("/items/create", response_model=DataItems)
 def create_items_route(item_data: DataItems, db: Session = Depends(get_db)):
-    create(item_data, db)
-    return "created row"
+    data_dict = item_data.dict()
+    new_data = create(data_dict, db)
+    return new_data
 
 
 @app.get("/items/read/{id_df}")

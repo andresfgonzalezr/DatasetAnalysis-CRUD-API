@@ -7,10 +7,11 @@ from sqlalchemy.orm import Session
 
 
 def create(data, db):
-    data_dict = data.__dict__
+    data_dict = data
     new_data = Datos(**data_dict)
     db.add(new_data)
     db.commit()
+    return new_data
 
 
 # Making a request to show all the table
