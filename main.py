@@ -52,8 +52,7 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
 @app.post("/items/gpt")
 def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
     try:
-        result = get_gpt(input_prompt)
-        return {"response": result}
+        get_gpt(input_prompt, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

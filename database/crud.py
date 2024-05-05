@@ -96,6 +96,6 @@ def get_gpt(input_prompt, db):
         return read_by_id(data_id_gpt, db)
     elif data_response["action"] == "delete":
         delete_data(data_id_gpt, db)
-        return read_by_id(data_id_gpt, db)
+        return "item deleted"
 
 # print(get_gpt("read dataframe with id 1"))
