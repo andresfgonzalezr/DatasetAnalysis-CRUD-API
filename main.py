@@ -43,9 +43,10 @@ def update_item(item_id: int, item_data: DataItems, db: Session = Depends(get_db
 
 
 # Set up a route DELETE in order to delete a row from the project.
-@app.delete("/items/{item_id}/delete", response_model=DataItems)
+@app.delete("/items/{item_id}/delete")
 def delete_item(item_id: int, db: Session = Depends(get_db)):
-    return delete_data(item_id, db)
+    delete_data(item_id, db)
+    return "Item deleted"
 
 
 @app.post("/items/gpt")

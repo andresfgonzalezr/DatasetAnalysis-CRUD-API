@@ -32,14 +32,17 @@ def update_data(data_id, new_data, db: Session):
     for key, value in new_data.items():
         setattr(data_to_update, key, value)
     db.commit()
+    return data_to_update
 
 
 # Deleting one row from the DataBase with the id
 def delete_data(data_id, db: Session):
     data_to_delete = db.query(Datos).filter_by(id=data_id).first()
-    db.delete(data_to_delete)
-    db.commit()
-    return data_to_delete
+    if data_to_delete:
+        db.delete(data_to_delete)
+        db.commit()
+    else:
+        return "id doesn´t exist"
 
 
 def get_gpt(input_prompt):
