@@ -1,8 +1,5 @@
 import pandas as pd
 from sqlalchemy import create_engine
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 
@@ -23,10 +20,3 @@ Base = declarative_base()
 Base.metadata.create_all(bind=engine_1)
 SessionLocal = sessionmaker(bind=engine_1)
 session = SessionLocal()
-
-
-load_dotenv()
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI()
-
-

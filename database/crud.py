@@ -2,8 +2,10 @@ from sqlalchemy.sql.expression import text
 from database.models import Datos
 from database.database import SessionLocal, session, engine
 import json
-from database.database import client
 from sqlalchemy.orm import Session
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
 
 def create(data: dict, db):
@@ -41,8 +43,14 @@ def delete_data(data_id: int, db: Session):
     if data_to_delete:
         db.delete(data_to_delete)
         db.commit()
+        return "Item deleted"
     else:
         return "id doesn´t exist"
+
+
+load_dotenv()
+OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 
 def get_gpt(input_prompt: str, db):

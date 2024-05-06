@@ -46,7 +46,6 @@ def update_item(item_id: int, item_data: DataItems, db: Session = Depends(get_db
 @app.delete("/items/{item_id}/delete")
 def delete_item(item_id: int, db: Session = Depends(get_db)):
     delete_data(item_id, db)
-    return "Item deleted"
 
 
 @app.post("/items/gpt")
