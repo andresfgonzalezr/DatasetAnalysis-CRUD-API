@@ -13,23 +13,21 @@ This project involves extracting data from a PostgreSQL instance using Python, p
 
 ## Project Structure
 
-- README.md: This document, providing an overview of the project and its tasks.
+- README.md: This document provides an overview of the project and its tasks.
 - requirements.txt: Includes all dependencies needed for the project.
 - main.py: Contains the main code for the project.
-- Clas_file.py: Contains the Classes used in the project, to import them into the files that need them
-- database.py: This file is in charge of downloading the DataBase from the postgreSQL instance and using pandas to transform into a DataSet, to work on it.
-- cleaning_data.py: The code in this file is the one that is in charge of cleaning the data after downloading the DataBase from the postgreSQL instance.
+- database 
+    - models.py: Contains the Classes used in the project, to import them into the files that need them.
+    - database.py: This file is in charge of downloading the DataBase from the PostgreSQL instance and using pandas to transform it into a DataSet for processing.
+    - cleaning_data.py: The code in this file is responsible for cleaning the data after downloading it from the PostgreSQL instance.
+    - crud.py: This code is the one in charge of the functions of the crud and the function of gpt.
 
 ## Usage Instructions
 
-1. Setup Environment: Ensure Python and required dependencies from requirements.txt are installed.
-2. Run main.py: Execute main.py to initiate the project, use "uvicorn main:app --relod" to initiate the project.
-3. Enter to the localHost to began working with the database and the functions of the crud, use the URL:"http://127.0.0.1:8000/docs" or use the endpoints.
-4. The FastAPI interface will request information about the database in order to carry out any of the requests.
-5. For posting the API will ask the information about the row to create.
-6. For get one specific row the API will ask for the id of the row.
-7. For get all the database only execute
-8. For PUT introduce the information of the row you want to update.
-9. For delete the API will ask for the id in order to delete the row with that id.
-10. For using the GPT function, introduce the prompt you want to use, for a better understanding of the prompt is better to use the words "create", "read", "upgrade" or "delete"
-11. At the end only finish the process of the API using "ctrl + c"
+1. Setup Environment: Ensure Python and the required dependencies from requirements.txt are installed, for install the dependencies use "pip install -r requirements.txt".
+2. For running main.py first create a file .env with the API key of openai, it is exported as OPENAI_API_KEY variable.
+3. Run main.py: Execute main.py to initiate the project, use "uvicorn main:app --reload" to initiate the project.
+4. Enter the localHost to begin working with the database and the functions of the CRUD, use the URL: "http://127.0.0.1:8000/docs" or access the endpoints.
+5. The FastAPI interface will request information about the database in order to carry out any of the requests.
+6. To delete, the API will ask for the id in order to delete the row with that id. 
+7. For using the GPT function, introduce the prompt you want to use. For better understanding, it's recommended to use the words "create", "read", "update", or "delete".
