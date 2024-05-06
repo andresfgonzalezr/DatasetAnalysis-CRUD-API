@@ -1,6 +1,5 @@
 from sqlalchemy.sql.expression import text
-from database.models import Datos
-from database.database import SessionLocal, session, engine
+from database.models import DataBase
 import json
 from sqlalchemy.orm import Session
 from openai import OpenAI
@@ -10,7 +9,7 @@ import os
 
 def create(data: dict, db):
     data_dict = data
-    new_data = Datos(**data_dict)
+    new_data = DataBase(**data_dict)
     db.add(new_data)
     db.commit()
     return new_data
@@ -30,7 +29,7 @@ def read_by_id(data_id: int, db: Session):
 
 # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
 def update_data(data_id: int, new_data: dict, db: Session):
-    data_to_update = db.query(Datos).filter_by(id=data_id).first()
+    data_to_update = db.query(DataBase).filter_by(id=data_id).first()
     for key, value in new_data.items():
         setattr(data_to_update, key, value)
     db.commit()
@@ -39,7 +38,7 @@ def update_data(data_id: int, new_data: dict, db: Session):
 
 # Deleting one row from the DataBase with the id
 def delete_data(data_id: int, db: Session):
-    data_to_delete = db.query(Datos).filter_by(id=data_id).first()
+    data_to_delete = db.query(DataBase).filter_by(id=data_id).first()
     if data_to_delete:
         db.delete(data_to_delete)
         db.commit()
@@ -106,4 +105,3 @@ def get_gpt(input_prompt: str, db):
         delete_data(data_id_gpt, db)
         return "item deleted"
 
-# print(get_gpt("read dataframe with id 1"))

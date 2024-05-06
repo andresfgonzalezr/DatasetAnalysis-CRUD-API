@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from database.crud import create, read, read_by_id, update_data, delete_data, get_gpt
 from database.models import DataItems
 from sqlalchemy.orm import Session
-from database.database import SessionLocal, engine
+from database.database import SessionLocal, engine_1
 
 
 def get_db():
@@ -54,7 +54,7 @@ def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
         get_gpt(input_prompt, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+# run me with uvicorn...
 
 # if __name__ == "__main__":
     # clean_data()

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Datos(Base):
+class DataBase(Base):
     __tablename__ = "final_data_andres"
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime)

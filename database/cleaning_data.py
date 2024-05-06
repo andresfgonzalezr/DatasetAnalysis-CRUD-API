@@ -1,4 +1,4 @@
-from database import df_for_clean, engine
+from database import df_for_clean, engine_1
 
 df = df_for_clean
 
@@ -53,5 +53,5 @@ def clean_data():
     df_final = df_final.assign(id=range(1, len(df_final) + 1))
 
     # uploading the clean DataFrame into the instance SQL transforming it into a sql document.
-    df_final.to_sql("final_data_andres", con=engine, if_exists="replace")
+    df_final.to_sql("final_data_andres", con=engine_1, if_exists="replace")
 
