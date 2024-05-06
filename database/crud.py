@@ -6,7 +6,7 @@ from database.database import client
 from sqlalchemy.orm import Session
 
 
-def create(data, db):
+def create(data: dict, db):
     data_dict = data
     new_data = Datos(**data_dict)
     db.add(new_data)
@@ -20,14 +20,14 @@ def read(db: Session):
     return db.execute(query).fetchall()
 
 
-def read_by_id(data_id, db: Session):
+def read_by_id(data_id: int, db: Session):
     query = text("SELECT * FROM final_data_andres WHERE id= :data_id")
     result = db.execute(query, {"data_id": data_id}).fetchall()
     return result
 
 
 # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
-def update_data(data_id, new_data, db: Session):
+def update_data(data_id: int, new_data: dict, db: Session):
     data_to_update = db.query(Datos).filter_by(id=data_id).first()
     for key, value in new_data.items():
         setattr(data_to_update, key, value)
@@ -36,7 +36,7 @@ def update_data(data_id, new_data, db: Session):
 
 
 # Deleting one row from the DataBase with the id
-def delete_data(data_id, db: Session):
+def delete_data(data_id: int, db: Session):
     data_to_delete = db.query(Datos).filter_by(id=data_id).first()
     if data_to_delete:
         db.delete(data_to_delete)
@@ -45,9 +45,9 @@ def delete_data(data_id, db: Session):
         return "id doesn´t exist"
 
 
-def get_gpt(input_prompt, db):
-    user_prompt = (f'''
-                   I have the next promtp, I need to take out the information about, also I have to fill the next format and give plis to me in a json format
+def get_gpt(input_prompt: str, db):
+    user_prompt = f'''
+                   I have the next prompt, I need to extract the information about, also I have to fill out the next format and give please to me in a JSON format
                        id = Column(Integer, primary_key=True)
         timestamp = Column(DateTime)
         age = Column(String)
@@ -67,10 +67,10 @@ def get_gpt(input_prompt, db):
         education_level = Column(String)
         gender = Column(String)
         race = Column(String)
-        the prompt I have is this one: {input_prompt}
-        if in the prompt any of the fields has no information give it to me with None, this info is going to be used in a python DF
-        also identify and show me if the prompt is create, update, read or delete, create 2 dictionaries the first one with the action and the second one with the data
-                   ''')
+        the prompt I have is as follows: {input_prompt}
+        if any of the fields in the prompt have no information give it to me with None, this info is going to be used in a python DF
+        also identify and show me if the prompt is create, update, read or delete, create two dictionaries the first one with the action and the second one with the data
+                   '''
 
     response = client.chat.completions.create(
       model="gpt-3.5-turbo",
