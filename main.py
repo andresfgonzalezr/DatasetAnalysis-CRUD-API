@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from database.crud import create, read, read_by_id, update_data, delete_data, get_gpt
-from database.models import DataItems
+from utils.models import DataItems
 from sqlalchemy.orm import Session
 from database.database import SessionLocal, engine_1
+from utils.cleaning_data import clean_data
 
 
 def get_db():

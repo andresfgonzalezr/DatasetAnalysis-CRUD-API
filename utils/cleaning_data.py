@@ -1,4 +1,4 @@
-from database import df_for_clean, engine_1
+from ..database.database import df_for_clean, engine_1
 
 df = df_for_clean
 
