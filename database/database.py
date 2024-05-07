@@ -1,9 +1,13 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-db_url_1 = "postgresql://default:VbwkxX41WTuY@ep-polished-frost-a41zn8lf-pooler.us-east-1.aws.neon.tech:5432/verceldb"
+db_url_1 = os.getenv('DATABASE_URL')
 engine_1 = create_engine(db_url_1)
 sql_query = "SELECT * FROM survey"
 df_for_clean = pd.read_sql(sql_query, engine_1)
