@@ -25,9 +25,10 @@ This project involves extracting data from a PostgreSQL instance using Python, p
 ## Usage Instructions
 
 1. Setup Environment: Ensure Python and the required dependencies from requirements.txt are installed, for install the dependencies use "pip install -r requirements.txt".
-2. For running main.py first create a file .env with the API key of openai, it is exported as OPENAI_API_KEY variable.
+2. For running main.py first create a file .env with the API key of openai and the URL of the database, it is exported as OPENAI_API_KEY variable and DATABASE_URL variable.
+  - For the API key it can be downloaded from the OpenAI Overview page, log in with your email address, go to settings, click on "Your Profile" and go to the User API keys.
+  - For the URL of the database you can create the variable using vercel.
 3. Run main.py: Execute main.py to initiate the project, use "uvicorn main:app --reload" to initiate the project.
 4. Enter the localHost to begin working with the database and the functions of the CRUD, use the URL: "http://127.0.0.1:8000/docs" or access the endpoints.
 5. The FastAPI interface will request information about the database in order to carry out any of the requests.
-6. To delete, the API will ask for the id in order to delete the row with that id. 
-7. For using the GPT function, introduce the prompt you want to use. For better understanding, it's recommended to use the words "create", "read", "update", or "delete".
+6. To use the GPT function, input the desired prompt. It's best to specify the database request type in the prompt. For reading and updating, include relevant information (e.g., age, location, salary). For reading and deleting, provide the row ID and specify the action (create, read, update, or delete).

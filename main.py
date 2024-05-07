@@ -54,6 +54,7 @@ def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
         get_gpt(input_prompt, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+# For using the gpt function introduce the prompt you want to use with the typo of request you want to apply into the database, this funcition will use the get_gpt function in order o process the prompt and apply the crud function that has the type of request you want to use
 # run me with uvicorn...
 
 # if __name__ == "__main__":
