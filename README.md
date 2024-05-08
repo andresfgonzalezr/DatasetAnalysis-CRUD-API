@@ -17,10 +17,12 @@ This project involves extracting data from a PostgreSQL instance using Python, p
 - requirements.txt: Includes all dependencies needed for the project.
 - main.py: Contains the main code for the project.
 - database: 
-    - models.py: Contains the Classes used in the project, to import them into the files that need them.
+    - models.py: Contains the Class from the schemas of the database that is used in the CRUD.
     - database.py: This file is in charge of downloading the DataBase from the PostgreSQL instance and using pandas to transform it into a DataSet for processing.
     - cleaning_data.py: The code in this file is responsible for cleaning the data after downloading it from the PostgreSQL instance.
     - crud.py: This code is the one in charge of the functions of the crud and the function of gpt.
+- utils:
+    - models.py: In this file is the request model from the API used to run main.py.
 
 ## Usage Instructions
 
