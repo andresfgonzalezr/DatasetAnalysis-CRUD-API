@@ -55,3 +55,8 @@ def clean_data():
     # uploading the clean DataFrame into the instance SQL transforming it into a sql document.
     df_final.to_sql("final_data_andres", con=engine_1, if_exists="replace")
 
+    return df_final
+
+
+df_to_nn = clean_data()
+
