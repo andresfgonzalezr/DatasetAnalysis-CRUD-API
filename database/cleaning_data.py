@@ -59,4 +59,3 @@ def clean_data():
 
 
 df_to_nn = clean_data()
-
