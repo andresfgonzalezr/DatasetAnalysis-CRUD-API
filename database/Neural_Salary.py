@@ -48,18 +48,58 @@ class NeuralSalary(nn.Module):
         self.Linear1 = nn.Linear(n_entries, 6000)
         self.Linear2 = nn.Linear(6000, 3000)
         self.Linear3 = nn.Linear(3000, 1000)
-        self.Linear4 = nn.Linear(1000, n_entries)
+        self.Linear4 = nn.Linear(1000, 1)
 
     def forward(self, inputs):
-        prediction1 = torch.sigmoid(input=self.Linear1(inputs))
-        prediction2 = torch.sigmoid(input=self.Linear2(prediction1))
-        prediction3 = torch.sigmoid(input=self.Linear3(prediction2))
-        prediction_f = torch.sigmoid(input=self.Linear4(prediction3))
+        prediction1 = F.relu(input=self.Linear1(inputs))
+        prediction2 = F.relu(input=self.Linear2(prediction1))
+        prediction3 = F.relu(input=self.Linear3(prediction2))
+        prediction_f = self.Linear4(prediction3)
 
         return prediction_f
 
 
+lr = 0.01
+n_epochs = 100
 
+model = NeuralSalary(n_entries)
+criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
+for epoch in range(n_epochs):
+    model.train()
+    optimizer.zero_grad()
 
+    outputs = model(tensor_X_train)
 
+    loss = criterion(outputs.squeeze(), tensor_y_train.squeeze())
+    loss.backward()
+    optimizer.step()
+
+print(f'epoch[{epoch + 1}/{n_epochs}], Loss: {loss.item():.4f}')
+
+model.eval()
+with torch.no_grad():
+    outputs = model(tensor_X_test)
+    test_loss = criterion(outputs.squeeze(), tensor_y_test.squeeze())
+
+print(f'Test Loss: {test_loss.item():.4f}')
+
+df_outputs = pd.DataFrame({"groundtruth":tensor_y_test.squeeze().numpy(), "preds":outputs.squeeze().numpy()})
+df_outputs["delta"] = df_outputs["groundtruth"] - df_outputs["preds"]
+df_outputs["delta2"] = df_outputs.delta**2
+
+mse_criterion = nn.MSELoss()
+mse = mse_criterion(outputs.squeeze(), tensor_y_test.squeeze())
+print(f'MSE: {mse.item():.4f}')
+
+mae = torch.mean(torch.abs(outputs.squeeze() - tensor_y_test.squeeze()))
+print(f'MAE: {mae.item():.4f}')
+
+df_outputs = pd.DataFrame({
+    "groundtruth": tensor_y_test.squeeze().numpy(),
+    "preds": outputs.squeeze().numpy(),
+    "delta": (tensor_y_test - outputs).squeeze().numpy(),
+    "delta2": ((tensor_y_test - outputs)**2).squeeze().numpy()})
+
+print(df_outputs.head())
