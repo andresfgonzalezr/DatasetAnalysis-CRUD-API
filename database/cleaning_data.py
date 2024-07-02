@@ -13,6 +13,7 @@ def clean_data():
 
     # As the DataBase is taking into account only information from works, the annual_salary couldn´t be less than 1000 dolars a year, so deleting the rows that has this values on annual_salary
     df = df[~df["annual_salary"].isin(["0","00","1","100"])]
+    df = df[df["annual_salary"].astype(float) <= 2000000]
 
     # Deleting the spaces at the end of all the columns from the DataFrame
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
