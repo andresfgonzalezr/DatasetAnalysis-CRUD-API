@@ -4,7 +4,7 @@ import pandas as pd
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from cleaning_data import df_to_nn
+from database.cleaning_data import df_to_nn
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
@@ -136,7 +136,7 @@ model.eval()
 
 
 def predict_salary(new_data):
-    new_data = pd.DataFrame(new_data)
+    new_data = pd.DataFrame([new_data])
     new_data = pd.get_dummies(new_data)
     missing_cols = list(set(data_x.columns) - set(new_data.columns))
     new_cols = pd.DataFrame(0, index=new_data.index, columns=missing_cols)
@@ -159,4 +159,5 @@ def predict_salary(new_data):
 
     print(f'Predicted outputs: {predicted_outputs}')
     print(f'Predicted outputs desnormalized: {predicted_outputs_desnormalized}')
+
     return predicted_outputs_desnormalized
