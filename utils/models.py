@@ -23,3 +23,17 @@ class DataItems(BaseModel):
     education_level: Optional[str]
     gender: Optional[str]
     race: Optional[str]
+
+
+class InputData(BaseModel):
+    age = str
+    industry = str
+    currency = str
+    country = str
+    us_state = str
+    city = str
+    years_experience_overall = str
+    years_experience_field = str
+    education_level = str
+    gender = str
+    race = str

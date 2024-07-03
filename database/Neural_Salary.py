@@ -3,26 +3,14 @@ import numpy as np
 import pandas as pd
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import random_split, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset
 from cleaning_data import df_to_nn
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import torch.nn.init as init
 
 # taking out the variable that we want to predict
-# df_to_nn = pd.DataFrame(df_to_nn)
-print(df_to_nn.columns)
-print(df_to_nn['age'])
-print(df_to_nn['industry'])
-print(df_to_nn['currency'])
-print(df_to_nn['country'])
-print(df_to_nn['us_state'])
-print(df_to_nn['city'])
-print(df_to_nn['years_experience_overall'])
-print(df_to_nn['years_experience_field'])
-print(df_to_nn['education_level'])
-print(df_to_nn['gender'])
-print(df_to_nn['race'])
-
 data_y = df_to_nn[["annual_salary"]]
 
 
@@ -33,7 +21,7 @@ data_x = df_to_nn.drop(columns=['timestamp', 'job_context', 'annual_salary', 'ad
 data_x = pd.get_dummies(data_x)
 
 scaler = StandardScaler()
-# data_x = scaler.fit_transform(data_x)
+
 data_y_normalized = scaler.fit_transform(data_y)
 data_y_normalized = pd.DataFrame(data_y_normalized, columns=data_y.columns)
 
@@ -41,12 +29,10 @@ data_y_normalized = pd.DataFrame(data_y_normalized, columns=data_y.columns)
 X_train, X_test, y_train, y_test = train_test_split(data_x, data_y_normalized, test_size=0.2, random_state=21)
 
 
-# print('x Train: {}, x Test: {}, y Train: {}, y Test: {}'.format(X_train.shape, X_test.shape, y_train.shape, y_test.shape))
 y_train = y_train.astype(float)
 y_test = y_test.astype(float)
 
 n_entries = X_train.shape[1]
-# print(n_entries)
 
 tensor_X_train = torch.tensor(X_train.values, dtype=torch.float32).to('cpu')
 tensor_X_test = torch.tensor(X_test.values, dtype=torch.float32).to('cpu')
@@ -55,7 +41,12 @@ tensor_y_test = torch.tensor(y_test.values, dtype=torch.float32).to('cpu')
 tensor_y_train = tensor_y_train[:,None]
 tensor_y_test = tensor_y_test[:,None]
 
-# test = TensorDataset(tensor_X_train, tensor_y_train)
+train_dataset = TensorDataset(tensor_X_train, tensor_y_train) #new code
+test_dataset = TensorDataset(tensor_X_test, tensor_y_test) #new code
+
+batch_size = 128
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
 class NeuralSalary(nn.Module):
@@ -65,6 +56,13 @@ class NeuralSalary(nn.Module):
         self.Linear2 = nn.Linear(128, 128)
         self.Linear3 = nn.Linear(128, 128)
         self.Linear4 = nn.Linear(128, 1)
+        self.init_weights() #new code
+
+    def init_weights(self):
+        init.xavier_uniform_(self.Linear1.weight)
+        init.xavier_uniform_(self.Linear2.weight)
+        init.xavier_uniform_(self.Linear3.weight)
+        init.xavier_uniform_(self.Linear4.weight)
 
     def forward(self, inputs):
         prediction1 = F.relu(input=self.Linear1(inputs))
@@ -76,23 +74,36 @@ class NeuralSalary(nn.Module):
 
 
 lr = 0.001
-n_epochs = 10
+n_epochs = 50
 
 model = NeuralSalary(n_entries)
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+losses = []
 
 for epoch in range(n_epochs):
     model.train()
-    optimizer.zero_grad()
+    epoch_loss = 0
+    for batch_x, batch_y in train_loader:
+        optimizer.zero_grad()
+        output = model(batch_x)
+        loss = criterion(output.squeeze(), batch_y.squeeze())
+        loss.backward()
+        optimizer.step()
+        epoch_loss += loss.item()
+    avg_epoch_loss = epoch_loss / len(train_loader)
+    losses.append(avg_epoch_loss)
 
-    outputs = model(tensor_X_train)
+    print(f'epoch[{epoch + 1}/{n_epochs}], Loss: {avg_epoch_loss:.4f}')
 
-    loss = criterion(outputs.squeeze(), tensor_y_train.squeeze())
-    loss.backward()
-    optimizer.step()
 
-    print(f'epoch[{epoch + 1}/{n_epochs}], Loss: {loss.item():.4f}')
+# plt.figure(figsize=(10, 6))
+# plt.plot(range(1, n_epochs + 1), losses, marker='o')
+# plt.xlabel('Epoch')
+# plt.ylabel('Loss')
+# plt.title('Training Loss by Epoch')
+# plt.grid(True)
+# plt.show()
 
 model.eval()
 with torch.no_grad():
@@ -110,10 +121,6 @@ with torch.no_grad():
 
 print(f'Test Loss: {test_loss.item():.4f}')
 
-#df_outputs = pd.DataFrame({"groundtruth":tensor_y_test.squeeze().numpy(), "preds":outputs_desnormalized.squeeze().numpy()})
-#df_outputs["delta"] = df_outputs["groundtruth"] - df_outputs["preds"]
-#df_outputs["delta2"] = df_outputs.delta**2
-
 mse_criterion = nn.MSELoss()
 mse = mse_criterion(tensor_outputs_desnormalized.squeeze(), tensor_y_test.squeeze())
 print(f'MSE: {mse.item():.4f}')
@@ -121,53 +128,35 @@ print(f'MSE: {mse.item():.4f}')
 mae = torch.mean(torch.abs(tensor_outputs_desnormalized.squeeze() - tensor_y_test.squeeze()))
 print(f'MAE: {mae.item():.4f}')
 
-# df_outputs = pd.DataFrame({
-    #"groundtruth": tensor_y_test.squeeze().numpy(),
-    #"preds": outputs.squeeze().numpy(),
-    #"delta": (tensor_y_test - outputs).squeeze().numpy(),
-    #"delta2": ((tensor_y_test - outputs)**2).squeeze().numpy()})
-
-#print(df_outputs.head())
-
 torch.save(model.state_dict(), './Neural_Salary_Model.pth')
 
 model = NeuralSalary(n_entries)
 model.load_state_dict(torch.load('./Neural_Salary_Model.pth'))
 model.eval()
 
-new_data = {
-    'age': ['25-34'],
-    'industry': ['computing or tech'],
-    'currency': ['USD'],
-    'country': ['united states'],
-    'us_state': ['None'],
-    'city': ['boston'],
-    'years_experience_overall': ['8-10 years'],
-    'years_experience_field': ['5-7 years'],
-    'education_level': ['College degree'],
-    'gender': ['Woman'],
-    'race': ['White']
-}
-new_data = pd.DataFrame(new_data)
-new_data = pd.get_dummies(new_data)
-missing_cols = list(set(data_x.columns) - set(new_data.columns))
-new_cols = pd.DataFrame(0, index=new_data.index, columns=missing_cols)
 
-new_data = pd.concat([new_data, new_cols], axis=1)
+def predict_salary(new_data):
+    new_data = pd.DataFrame(new_data)
+    new_data = pd.get_dummies(new_data)
+    missing_cols = list(set(data_x.columns) - set(new_data.columns))
+    new_cols = pd.DataFrame(0, index=new_data.index, columns=missing_cols)
 
-new_data = new_data[data_x.columns]
-new_data = new_data.astype(float)
+    new_data = pd.concat([new_data, new_cols], axis=1)
 
-new_data_tensor = torch.tensor(new_data.values, dtype=torch.float32)
-with torch.no_grad():
-    predicted_outputs = model(new_data_tensor)
+    new_data = new_data[data_x.columns]
+    new_data = new_data.astype(float)
 
-predicted_outputs = predicted_outputs.cpu().numpy()
+    new_data_tensor = torch.tensor(new_data.values, dtype=torch.float32)
+    with torch.no_grad():
+        predicted_outputs = model(new_data_tensor)
 
-mean_salary = scaler.mean_[0]
-std_salary = scaler.scale_[0]
+    predicted_outputs = predicted_outputs.cpu().numpy()
 
-predicted_outputs_desnormalized = predicted_outputs * std_salary + mean_salary
+    mean_salary = scaler.mean_[0]
+    std_salary = scaler.scale_[0]
 
-print(f'Predicted outputs: {predicted_outputs}')
-print(f'Predicted outputs desnormalized: {predicted_outputs_desnormalized}')
+    predicted_outputs_desnormalized = predicted_outputs * std_salary + mean_salary
+
+    print(f'Predicted outputs: {predicted_outputs}')
+    print(f'Predicted outputs desnormalized: {predicted_outputs_desnormalized}')
+    return predicted_outputs_desnormalized

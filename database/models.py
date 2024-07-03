@@ -24,3 +24,6 @@ class DataBase(Base):
     education_level = Column(String)
     gender = Column(String)
     race = Column(String)
+
+
+

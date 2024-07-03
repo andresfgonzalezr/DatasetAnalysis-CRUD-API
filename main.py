@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from database.crud import create, read, read_by_id, update_data, delete_data, get_gpt
-from utils.models import DataItems
+from utils.models import DataItems, InputData
 from sqlalchemy.orm import Session
 from database.database import SessionLocal
+from database.Neural_Salary import predict_salary
 
 
 def get_db():
@@ -54,6 +55,15 @@ def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
         get_gpt(input_prompt, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/predict")
+def predict(data: InputData):
+    prediction = predict_salary(data)
+    return {"prediction": prediction}
+
+
+
 # For using the gpt function introduce the prompt you want to use with the typo of request you want to apply into the database, this funcition will use the get_gpt function in order o process the prompt and apply the crud function that has the type of request you want to use
 # run me with uvicorn...
 
