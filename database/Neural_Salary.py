@@ -130,10 +130,10 @@ def training_model():
     mae = torch.mean(torch.abs(tensor_outputs_desnormalized.squeeze() - tensor_y_test.squeeze()))
     print(f'MAE: {mae.item():.4f}')
 
-    torch.save(model.state_dict(), './Neural_Salary_Model.pth')
+    torch.save(model.state_dict(), '../../Neural_Salary_Model.pth')
 
     model = NeuralSalary(n_entries)
-    model.load_state_dict(torch.load('./Neural_Salary_Model.pth'))
+    model.load_state_dict(torch.load('../../Neural_Salary_Model.pth'))
     model.eval()
 
 
