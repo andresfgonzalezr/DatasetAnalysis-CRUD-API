@@ -10,129 +10,131 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import torch.nn.init as init
 
-# taking out the variable that we want to predict
-data_y = df_to_nn[["annual_salary"]]
+
+def training_model():
+    # taking out the variable that we want to predict
+    data_y = df_to_nn[["annual_salary"]]
 
 
-# removing from the dataset variables that doesn´t help us to predict
-data_x = df_to_nn.drop(columns=['timestamp', 'job_context', 'annual_salary', 'additional_compensation', 'currency_other', 'income_context','id', "job_title"])
+    # removing from the dataset variables that doesn´t help us to predict
+    data_x = df_to_nn.drop(columns=['timestamp', 'job_context', 'annual_salary', 'additional_compensation', 'currency_other', 'income_context','id', "job_title"])
 
-# Applying one hot encoding to the dataframe in order to the neural network works
-data_x = pd.get_dummies(data_x)
+    # Applying one hot encoding to the dataframe in order to the neural network works
+    data_x = pd.get_dummies(data_x)
 
-scaler = StandardScaler()
+    scaler = StandardScaler()
 
-data_y_normalized = scaler.fit_transform(data_y)
-data_y_normalized = pd.DataFrame(data_y_normalized, columns=data_y.columns)
+    data_y_normalized = scaler.fit_transform(data_y)
+    data_y_normalized = pd.DataFrame(data_y_normalized, columns=data_y.columns)
 
-# split the database into a train set and a test set, using sklearn for training using 80% and for test using 20%
-X_train, X_test, y_train, y_test = train_test_split(data_x, data_y_normalized, test_size=0.2, random_state=21)
-
-
-y_train = y_train.astype(float)
-y_test = y_test.astype(float)
-
-n_entries = X_train.shape[1]
-
-tensor_X_train = torch.tensor(X_train.values, dtype=torch.float32).to('cpu')
-tensor_X_test = torch.tensor(X_test.values, dtype=torch.float32).to('cpu')
-tensor_y_train = torch.tensor(y_train.values, dtype=torch.float32).to('cpu')
-tensor_y_test = torch.tensor(y_test.values, dtype=torch.float32).to('cpu')
-tensor_y_train = tensor_y_train[:,None]
-tensor_y_test = tensor_y_test[:,None]
-
-train_dataset = TensorDataset(tensor_X_train, tensor_y_train) #new code
-test_dataset = TensorDataset(tensor_X_test, tensor_y_test) #new code
-
-batch_size = 128
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    # split the database into a train set and a test set, using sklearn for training using 80% and for test using 20%
+    X_train, X_test, y_train, y_test = train_test_split(data_x, data_y_normalized, test_size=0.2, random_state=21)
 
 
-class NeuralSalary(nn.Module):
-    def __init__(self, n_entries):
-        super(NeuralSalary, self).__init__()
-        self.Linear1 = nn.Linear(n_entries, 128)
-        self.Linear2 = nn.Linear(128, 128)
-        self.Linear3 = nn.Linear(128, 128)
-        self.Linear4 = nn.Linear(128, 1)
-        self.init_weights() #new code
+    y_train = y_train.astype(float)
+    y_test = y_test.astype(float)
 
-    def init_weights(self):
-        init.xavier_uniform_(self.Linear1.weight)
-        init.xavier_uniform_(self.Linear2.weight)
-        init.xavier_uniform_(self.Linear3.weight)
-        init.xavier_uniform_(self.Linear4.weight)
+    n_entries = X_train.shape[1]
 
-    def forward(self, inputs):
-        prediction1 = F.relu(input=self.Linear1(inputs))
-        prediction2 = F.relu(input=self.Linear2(prediction1))
-        prediction3 = F.relu(input=self.Linear3(prediction2))
-        prediction_f = self.Linear4(prediction3)
+    tensor_X_train = torch.tensor(X_train.values, dtype=torch.float32).to('cpu')
+    tensor_X_test = torch.tensor(X_test.values, dtype=torch.float32).to('cpu')
+    tensor_y_train = torch.tensor(y_train.values, dtype=torch.float32).to('cpu')
+    tensor_y_test = torch.tensor(y_test.values, dtype=torch.float32).to('cpu')
+    tensor_y_train = tensor_y_train[:,None]
+    tensor_y_test = tensor_y_test[:,None]
 
-        return prediction_f
+    train_dataset = TensorDataset(tensor_X_train, tensor_y_train) #new code
+    test_dataset = TensorDataset(tensor_X_test, tensor_y_test) #new code
+
+    batch_size = 128
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
-lr = 0.001
-n_epochs = 50
+    class NeuralSalary(nn.Module):
+        def __init__(self, n_entries):
+            super(NeuralSalary, self).__init__()
+            self.Linear1 = nn.Linear(n_entries, 128)
+            self.Linear2 = nn.Linear(128, 128)
+            self.Linear3 = nn.Linear(128, 128)
+            self.Linear4 = nn.Linear(128, 1)
+            self.init_weights() #new code
 
-model = NeuralSalary(n_entries)
-criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-losses = []
+        def init_weights(self):
+            init.xavier_uniform_(self.Linear1.weight)
+            init.xavier_uniform_(self.Linear2.weight)
+            init.xavier_uniform_(self.Linear3.weight)
+            init.xavier_uniform_(self.Linear4.weight)
 
-for epoch in range(n_epochs):
-    model.train()
-    epoch_loss = 0
-    for batch_x, batch_y in train_loader:
-        optimizer.zero_grad()
-        output = model(batch_x)
-        loss = criterion(output.squeeze(), batch_y.squeeze())
-        loss.backward()
-        optimizer.step()
-        epoch_loss += loss.item()
-    avg_epoch_loss = epoch_loss / len(train_loader)
-    losses.append(avg_epoch_loss)
+        def forward(self, inputs):
+            prediction1 = F.relu(input=self.Linear1(inputs))
+            prediction2 = F.relu(input=self.Linear2(prediction1))
+            prediction3 = F.relu(input=self.Linear3(prediction2))
+            prediction_f = self.Linear4(prediction3)
 
-    print(f'epoch[{epoch + 1}/{n_epochs}], Loss: {avg_epoch_loss:.4f}')
+            return prediction_f
 
 
-# plt.figure(figsize=(10, 6))
-# plt.plot(range(1, n_epochs + 1), losses, marker='o')
-# plt.xlabel('Epoch')
-# plt.ylabel('Loss')
-# plt.title('Training Loss by Epoch')
-# plt.grid(True)
-# plt.show()
+    lr = 0.001
+    n_epochs = 50
 
-model.eval()
-with torch.no_grad():
-    outputs = model(tensor_X_test)
+    model = NeuralSalary(n_entries)
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    losses = []
 
-    mean_salary = scaler.mean_
-    std_salary = scaler.scale_
+    for epoch in range(n_epochs):
+        model.train()
+        epoch_loss = 0
+        for batch_x, batch_y in train_loader:
+            optimizer.zero_grad()
+            output = model(batch_x)
+            loss = criterion(output.squeeze(), batch_y.squeeze())
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()
+        avg_epoch_loss = epoch_loss / len(train_loader)
+        losses.append(avg_epoch_loss)
 
-    outputs_desnormalized = outputs * std_salary + mean_salary
-    outputs_desnormalized = outputs_desnormalized.cpu().numpy()
+        print(f'epoch[{epoch + 1}/{n_epochs}], Loss: {avg_epoch_loss:.4f}')
 
-    tensor_outputs_desnormalized = torch.tensor(outputs_desnormalized, dtype=torch.float32)
 
-    test_loss = criterion(tensor_outputs_desnormalized.squeeze(), tensor_y_test.squeeze())
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(range(1, n_epochs + 1), losses, marker='o')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Loss')
+    # plt.title('Training Loss by Epoch')
+    # plt.grid(True)
+    # plt.show()
 
-print(f'Test Loss: {test_loss.item():.4f}')
+    model.eval()
+    with torch.no_grad():
+        outputs = model(tensor_X_test)
 
-mse_criterion = nn.MSELoss()
-mse = mse_criterion(tensor_outputs_desnormalized.squeeze(), tensor_y_test.squeeze())
-print(f'MSE: {mse.item():.4f}')
+        mean_salary = scaler.mean_
+        std_salary = scaler.scale_
 
-mae = torch.mean(torch.abs(tensor_outputs_desnormalized.squeeze() - tensor_y_test.squeeze()))
-print(f'MAE: {mae.item():.4f}')
+        outputs_desnormalized = outputs * std_salary + mean_salary
+        outputs_desnormalized = outputs_desnormalized.cpu().numpy()
 
-torch.save(model.state_dict(), './Neural_Salary_Model.pth')
+        tensor_outputs_desnormalized = torch.tensor(outputs_desnormalized, dtype=torch.float32)
 
-model = NeuralSalary(n_entries)
-model.load_state_dict(torch.load('./Neural_Salary_Model.pth'))
-model.eval()
+        test_loss = criterion(tensor_outputs_desnormalized.squeeze(), tensor_y_test.squeeze())
+
+    print(f'Test Loss: {test_loss.item():.4f}')
+
+    mse_criterion = nn.MSELoss()
+    mse = mse_criterion(tensor_outputs_desnormalized.squeeze(), tensor_y_test.squeeze())
+    print(f'MSE: {mse.item():.4f}')
+
+    mae = torch.mean(torch.abs(tensor_outputs_desnormalized.squeeze() - tensor_y_test.squeeze()))
+    print(f'MAE: {mae.item():.4f}')
+
+    torch.save(model.state_dict(), './Neural_Salary_Model.pth')
+
+    model = NeuralSalary(n_entries)
+    model.load_state_dict(torch.load('./Neural_Salary_Model.pth'))
+    model.eval()
 
 
 def predict_salary(new_data):
