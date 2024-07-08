@@ -62,6 +62,6 @@ def use_gpt(input_prompt: str, db: Session = Depends(get_db)):
 # if __name__ == "__main__":
     # clean_data()
 
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app)
+# if __name__ == '__main__':
+    # import uvicorn
+    # uvicorn.run(app)
