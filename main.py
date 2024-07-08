@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from database.crud import create, read, read_by_id, update_data, delete_data, get_gpt
-from utils.models import DataItems, InputData
+from utils.models import DataItems
 from sqlalchemy.orm import Session
 from database.database_ import SessionLocal
 
