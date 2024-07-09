@@ -2,4 +2,8 @@
 __pycache__/
 Proyecto-Andres-1/__pychache__/
 .vercel
-/Users/andresgonzalez/Proyectos-Andres/Proyecto-Andres-1/proyecto1
+proyecto1/
+.idea/
+__init__.py
+Proyecto-Andres-1/database/__init__.py
+Proyecto-Andres-1/utils/__init__.py
