@@ -18,13 +18,16 @@ def create(data: dict, db):
 # Making a request to show all the table
 def read(db: Session):
     query = text("SELECT * FROM final_data_andres")
-    return db.execute(query).fetchall()
+    result = db.execute(query)
+    columns = result.keys()
+    return [dict(zip(columns, row)) for row in result.fetchall()]
 
 
 def read_by_id(data_id: int, db: Session):
     query = text("SELECT * FROM final_data_andres WHERE id= :data_id")
-    result = db.execute(query, {"data_id": data_id}).fetchall()
-    return result
+    result = db.execute(query, {"data_id": data_id})
+    columns = result.keys()
+    return [dict(zip(columns, row)) for row in result.fetchall()]
 
 
 # Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
