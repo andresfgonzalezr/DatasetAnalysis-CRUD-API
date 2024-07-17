@@ -30,7 +30,6 @@ def read_by_id(data_id: int, db: Session):
     return [dict(zip(columns, row)) for row in result.fetchall()]
 
 
-# Making an update from one id in the DataBase, the value data_id is the same id from the table, and the new data is the values that are going to be updated
 def update_data(data_id: int, new_data: dict, db: Session):
     data_to_update = db.query(DataBase).filter_by(id=data_id).first()
     for key, value in new_data.items():
