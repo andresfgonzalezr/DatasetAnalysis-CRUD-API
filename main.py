@@ -3,6 +3,7 @@ from database.crud import create, read, read_by_id, update_data, delete_data, ge
 from utils.models import DataItems
 from sqlalchemy.orm import Session
 from database.database_ import SessionLocal
+import logging
 
 
 def get_db():
@@ -26,6 +27,7 @@ def create_items_route(item_data: DataItems, db: Session = Depends(get_db)):
 
 @app.post("/read_user/{id_df}")
 def read_item_by_id(id_df: int, db: Session = Depends(get_db)):
+    logging.info(f"API called with id_df: {id_df}")
     data = read_by_id(id_df, db)
     return {"response": data}
 
